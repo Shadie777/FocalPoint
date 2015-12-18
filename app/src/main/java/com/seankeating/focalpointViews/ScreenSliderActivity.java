@@ -60,7 +60,7 @@ public class ScreenSliderActivity extends FragmentActivity{
  * sequence.
  */
  class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-    public static final int NUM_PAGES = 1;
+    public static final int NUM_PAGES = 3;
 
     public ScreenSlidePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -68,13 +68,12 @@ public class ScreenSliderActivity extends FragmentActivity{
 
     @Override
     public Fragment getItem(int position) {
+        switch (position){
+
+        }
         return new TutorialFragment();
 }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return "Page " + position;
-    }
     @Override
     public int getCount() {
         return NUM_PAGES;
