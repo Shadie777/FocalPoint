@@ -2,20 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.seankeating.focalpoint">
 
-<<<<<<< HEAD
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
 
-=======
->>>>>>> b3c662e8898721605c0af6322536f7c82e30e80e
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<<<<<<< HEAD
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value= "@string/facebookID"/>
 
@@ -29,9 +25,6 @@
         <activity android:name="com.seankeating.focalpointViews.LoginActivity">
             android:label="FocalPoint"
             android:theme="@style/AppTheme.NoActionBar"
-=======
-        <activity android:name=".MainActivity">
->>>>>>> b3c662e8898721605c0af6322536f7c82e30e80e
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
