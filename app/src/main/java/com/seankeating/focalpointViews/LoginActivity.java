@@ -14,7 +14,7 @@ import com.seankeating.focalpointPresenter.LoginFragment;
 
 public class LoginActivity extends FragmentActivity {
   private LoginFragment login_fragment;
-//
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
