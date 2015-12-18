@@ -7,10 +7,27 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.seankeating.focalpoint.MainActivity">
+    tools:context="com.seankeating.focalpoint.LoginActivity">
 
-    <TextView
+
+
+    <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:name="com.seankeating.focalpointPresenter.LoginFragment"
+        android:id="@+id/login_frag"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        tools:layout="@layout/login_section_fragment" />
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/login_frag"
+        android:name="com.seankeating.focalpointViews.TutorialFragment"
+        android:id="@+id/fragment"
+        tools:layout="@layout/tutorial_section_fragment"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.seankeating.focalpointViews.LoginActivity">
+    >
 
     <TextView
         android:id="@+id/text_details"
@@ -26,13 +26,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
-    <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:name="com.seankeating.focalpointViews.TutorialFragment"
-        android:id="@+id/fragment"
-        tools:layout="@layout/tutorial_section_fragment"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>
