@@ -29,7 +29,7 @@
     <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:name="com.seankeating.focalpointViews.TutorialFragment"
+        android:name="com.seankeating.focalpointViews.FirstTutorialFragment"
         android:id="@+id/fragment"
         tools:layout="@layout/tutorial_section_fragment"
         android:layout_centerVertical="true"

@@ -68,13 +68,9 @@ public class ScreenSliderActivity extends FragmentActivity{
 
     @Override
     public Fragment getItem(int position) {
-        return new TutorialFragment();
-}
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return "Page " + position;
+        return new FirstTutorialFragment();
     }
+
     @Override
     public int getCount() {
         return NUM_PAGES;
