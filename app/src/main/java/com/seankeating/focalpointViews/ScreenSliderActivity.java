@@ -59,7 +59,6 @@ public class ScreenSliderActivity extends FragmentActivity{
  * sequence.
  */
  class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-    public static final int NUM_PAGES = 1;
 
     public ScreenSlidePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -67,12 +66,17 @@ public class ScreenSliderActivity extends FragmentActivity{
 
     @Override
     public Fragment getItem(int position) {
-        return new FirstTutorialFragment();
+        switch(position) {
+
+            case 0: return FirstTutorialFragment.create("FirstFragment, Instance 1");
+            case 1: return SecondTutorialFragment.create("SecondFragment, Instance 1");
+            default: return FirstTutorialFragment.create("FirstFragment, Default");
+        }
     }
 
     @Override
     public int getCount() {
-        return NUM_PAGES;
+        return 2;
     }
 }
 

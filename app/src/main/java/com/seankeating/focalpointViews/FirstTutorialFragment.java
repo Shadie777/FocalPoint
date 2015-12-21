@@ -36,8 +36,8 @@ public class FirstTutorialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_tutorial_fragment, container, false);
 
-        TextView textView = (TextView) view.findViewById(R.id.tutorialText);
-        textView.setText("this is the first frag");
+        //TextView textView = (TextView) view.findViewById(R.id.tutorialText);
+        //textView.setText("this is the first frag");
         return view;
     }
 }
