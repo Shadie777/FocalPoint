@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import com.seankeating.focalpoint.R;
 
@@ -34,7 +33,7 @@ public class ScreenSliderActivity extends FragmentActivity{
     protected void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tutorial_section_fragment);
+        setContentView(R.layout.first_tutorial_fragment);
 
         //instatiate the viewpager and pageradapter
 

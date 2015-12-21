@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:name="com.seankeating.focalpointViews.FirstTutorialFragment"
         android:id="@+id/fragment"
-        tools:layout="@layout/tutorial_section_fragment"
+        tools:layout="@layout/first_tutorial_fragment"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
