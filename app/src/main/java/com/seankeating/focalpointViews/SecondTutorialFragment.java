@@ -17,21 +17,21 @@ public class SecondTutorialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_second__tutorial_, container, false);
 
-        TextView tv = (TextView) v.findViewById(R.id.tutorialText2);
-        tv.setText(getArguments().getString("msg"));
+//        TextView tv = (TextView) v.findViewById(R.id.tutorialText2);
+//        tv.setText(getArguments().getString("msg"));
 
         return v;
     }
 
-    public static SecondTutorialFragment create(String text) {
-
-        SecondTutorialFragment f = new SecondTutorialFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-
-        f.setArguments(b);
-
-        return f;
-    }
+//    public static SecondTutorialFragment create(String text) {
+//
+//        SecondTutorialFragment f = new SecondTutorialFragment();
+//        Bundle b = new Bundle();
+//        b.putString("msg", text);
+//
+//        f.setArguments(b);
+//
+//        return f;
+//    }
 
 }

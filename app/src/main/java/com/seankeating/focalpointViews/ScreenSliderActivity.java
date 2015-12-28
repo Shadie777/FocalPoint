@@ -33,23 +33,15 @@ public class ScreenSliderActivity extends FragmentActivity{
     protected void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.first_tutorial_fragment);
+        setContentView(R.layout.activity_login);
 
-        //instatiate the viewpager and pageradapter
-
-        mviewPager = (ViewPager) findViewById(R.id.pager);
+        mviewPager = (ViewPager) findViewById(R.id.view_pager);
         mpagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mviewPager.setAdapter(mpagerAdapter);
+        mviewPager.setCurrentItem(0);
+
     }
 
-    @Override
-    public void onBackPressed(){
-        if (mviewPager.getCurrentItem() == 0){
-         super.onBackPressed();
-        }else{
-            mviewPager.setCurrentItem(mviewPager.getCurrentItem()-1);
-        }
-    }
 }
 
 
@@ -67,11 +59,12 @@ public class ScreenSliderActivity extends FragmentActivity{
     @Override
     public Fragment getItem(int position) {
         switch(position) {
-
-            case 0: return FirstTutorialFragment.create("FirstFragment, Instance 1");
-            case 1: return SecondTutorialFragment.create("SecondFragment, Instance 1");
-            default: return FirstTutorialFragment.create("FirstFragment, Default");
+            case 0:
+                return new FirstTutorialFragment();
+            case 1:
+                return new SecondTutorialFragment();
         }
+    return null;
     }
 
     @Override

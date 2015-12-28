@@ -2,13 +2,11 @@ package com.seankeating.focalpointPresenter;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.app.Activity;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -20,7 +18,6 @@ import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.seankeating.focalpoint.R;
-import com.seankeating.focalpointViews.LoginActivity;
 
 /**
  * Created by Sean on 04/12/2015.
@@ -60,7 +57,7 @@ public class LoginFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-      callBackManager= CallbackManager.Factory.create();
+       callBackManager= CallbackManager.Factory.create();
     }
 
     @Nullable
