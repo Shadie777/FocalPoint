@@ -62,19 +62,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 .setInterval(10*1000)
                 .setFastestInterval(1 * 1000);
     }
-//
-//    private void setUpMapIfNeeded() {
-//        // Do a null check to confirm that we have not already instantiated the map.
-//        if (mMap == null) {
-//            // Try to obtain the map from the SupportMapFragment.
-//            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-//                    .getMap();
-//            // Check if we were successful in obtaining the map.
-//            if (mMap != null) {
-//                onMapReady(mMap);
-//            }
-//        }
-//    }
 
     /**
      * Manipulates the map once available.
@@ -168,21 +155,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
     }
-
-//    @Override
-//    public void onStatusChanged(String provider, int status, Bundle extras) {
-//
-//    }
-//
-//    @Override
-//    public void onProviderEnabled(String provider) {
-//
-//    }
-//
-//    @Override
-//    public void onProviderDisabled(String provider) {
-//
-//    }
 }
 
 

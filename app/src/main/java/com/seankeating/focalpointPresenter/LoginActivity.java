@@ -1,4 +1,4 @@
-package com.seankeating.focalpointViews;
+package com.seankeating.focalpointPresenter;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;

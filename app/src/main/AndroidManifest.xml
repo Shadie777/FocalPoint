@@ -28,7 +28,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="FocalPoint"
         </activity>
-        <activity android:name="com.seankeating.focalpointViews.LoginActivity">
+        <activity android:name="com.seankeating.focalpointPresenter.LoginActivity">
             android:label="FocalPoint"
             android:theme="@style/AppTheme.NoActionBar"
             <!--<intent-filter>-->
