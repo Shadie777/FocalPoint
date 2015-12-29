@@ -19,15 +19,20 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.seankeating.focalpoint.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by Sean on 04/12/2015.
  */
-public class LoginFragment extends Fragment{
+public class LoginManager extends Fragment{
     private TextView text;
     private CallbackManager callBackManager;
+   // private static final List<String> PERMISSIONS = Arrays.asList("");
 
 
-    public LoginFragment(){
+    public LoginManager(){
 
     }
 
@@ -38,6 +43,7 @@ public class LoginFragment extends Fragment{
             Profile profile = Profile.getCurrentProfile();
 
             if(profile !=null){
+
                 text.setText("Welcome" + profile.getName());
             }
         }
@@ -60,12 +66,12 @@ public class LoginFragment extends Fragment{
        callBackManager= CallbackManager.Factory.create();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_login, container, false);
-        return view;
-    }
+//    @Nullable
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.activity_login, container, false);
+//        return view;
+//    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
@@ -84,6 +90,7 @@ public class LoginFragment extends Fragment{
         super.onActivityResult(requestCode, resultCode, data);
         callBackManager.onActivityResult(requestCode, resultCode, data);
     }
+
 }
 
 

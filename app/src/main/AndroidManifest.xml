@@ -9,6 +9,7 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -27,14 +28,14 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="FocalPoint"
         </activity>
-        <activity android:name="com.seankeating.focalpointViews.MapsActivity">
+        <activity android:name="com.seankeating.focalpointViews.LoginActivity">
             android:label="FocalPoint"
             android:theme="@style/AppTheme.NoActionBar"
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -48,9 +49,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <!--<activity-->
-            <!--android:name="com.seankeating.focalpointViews.MapsActivity"-->
-            <!--android:label="@string/title_activity_maps"></activity>-->
+        <activity
+            android:name="com.seankeating.focalpointPresenter.MapsActivity"
+            android:label="@string/title_activity_maps">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
