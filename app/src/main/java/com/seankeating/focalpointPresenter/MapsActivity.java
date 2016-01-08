@@ -74,12 +74,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
 
+        mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -88,6 +87,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        mMap.setMyLocationEnabled(true);
 
         if (location == null){
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -126,12 +126,13 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         LatLng latLng = new LatLng(currentLat, currentLon);
 
         MarkerOptions options = new MarkerOptions()
+                .draggable(true)
                 .position(latLng)
                 .title("You");
 
         mMap.addMarker(options);
-
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
     }
 
     @Override
@@ -154,6 +155,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
+    }
+
+
+    public void onMyLocationButtonClick(){
+
     }
 }
 

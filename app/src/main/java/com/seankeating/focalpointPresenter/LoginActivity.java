@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 
+import com.facebook.FacebookSdk;
+import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointPresenter.LoginManager;
 
 public class LoginActivity extends FragmentActivity {

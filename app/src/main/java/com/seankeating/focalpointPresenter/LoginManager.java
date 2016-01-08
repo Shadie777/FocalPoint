@@ -43,8 +43,8 @@ public class LoginManager extends Fragment{
             Profile profile = Profile.getCurrentProfile();
 
             if(profile !=null){
-
                 text.setText("Welcome" + profile.getName());
+                GetFacebookData.getUserInformation(accessToken);
             }
         }
 
@@ -59,19 +59,21 @@ public class LoginManager extends Fragment{
         }
     };
 
-  @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+
+    @Override
+    public void onCreate(  @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-       callBackManager= CallbackManager.Factory.create();
+        callBackManager= CallbackManager.Factory.create();
     }
 
-//    @Nullable
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.activity_login, container, false);
-//        return view;
-//    }
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_login, container, false);
+        return view;
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
@@ -79,7 +81,7 @@ public class LoginManager extends Fragment{
         // find fb login button by id and assign it to variable
         LoginButton login_button = (LoginButton) view.findViewById(R.id.login_button);
         login_button.setFragment(this); //set login button as a fragment
-        login_button.setReadPermissions("user_friends");
+        login_button.setReadPermissions(Arrays.asList("public_profile,user_events,user_actions.music,user_likes,rsvp_event"));
         login_button.registerCallback(callBackManager, callback);
 
         text = (TextView) view.findViewById(R.id.text_details);
