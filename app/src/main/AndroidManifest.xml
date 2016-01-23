@@ -14,8 +14,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebookID"
-            />
+            android:value="@string/facebookID" />
 
         <activity android:name="com.facebook.FacebookActivity">
             android:configChanges=
@@ -33,19 +32,15 @@
             </intent-filter>
         </activity>
 
-        <!--<meta-data-->
-            <!--android:name="com.google.android.geo.API_KEY"-->
-            <!--android:value="@string/google_maps_key" />-->
+         <meta-data
+         android:name="com.google.android.geo.API_KEY"
+         android:value="@string/google_maps_key" />
 
-        <!--<activity-->
-            <!--android:name="com.seankeating.focalpointPresenter.MapsActivity"-->
-            <!--android:label="@string/title_activity_maps">-->
-            <!--<intent-filter>-->
-                <!--&lt;!&ndash;<action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
 
-                <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
+         <activity
+         android:name="com.seankeating.focalpointPresenter.MapsActivity"
+         android:label="@string/title_activity_maps">
+         </activity>
     </application>
 
 </manifest>

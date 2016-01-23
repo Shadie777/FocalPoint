@@ -9,6 +9,9 @@ import com.facebook.FacebookSdk;
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointPresenter.LoginManager;
 
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
 public class LoginActivity extends FragmentActivity {
   private LoginManager login_fragment;
 
@@ -36,6 +39,9 @@ public class LoginActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
-        //loginfragment.onActivityResult(requestCode, resultCode, data);
+        Intent intent = new Intent();
+        intent.setClass(this, MapsActivity.class);
+        this.startActivity(intent);
+      //  loginfragment.onActivityResult(requestCode, resultCode, data);
     }
 }

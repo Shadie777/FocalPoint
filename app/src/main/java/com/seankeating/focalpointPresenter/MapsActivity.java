@@ -2,6 +2,7 @@ package com.seankeating.focalpointPresenter;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -125,6 +126,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         LatLng latLng = new LatLng(currentLat, currentLon);
 
+
         MarkerOptions options = new MarkerOptions()
                 .draggable(true)
                 .position(latLng)
@@ -132,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
+        InitiateConnection.main(currentLat, currentLon);
     }
 
     @Override
