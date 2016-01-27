@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -32,7 +33,7 @@ public class LoginManager extends Fragment{
     public static  AccessToken accessToken;
    // private static final List<String> PERMISSIONS = Arrays.asList("");
 
-
+   public boolean loginSuccessful;
     public LoginManager(){
 
     }
@@ -45,6 +46,8 @@ public class LoginManager extends Fragment{
 
             if(profile !=null){
               //  text.setText("Welcome" + profile.getName());
+
+                String accessToken= loginResult.getAccessToken().getToken();
                 new UserAccessToken(accessToken);
             }
         }
@@ -82,7 +85,7 @@ public class LoginManager extends Fragment{
         // find fb login button by id and assign it to variable
         LoginButton login_button = (LoginButton) view.findViewById(R.id.login_button);
         login_button.setFragment(this); //set login button as a fragment
-     //  login_button.setReadPermissions(Arrays.asList("public_profile,user_events,user_actions.music,user_likes,rsvp_event"));
+      login_button.setReadPermissions(Arrays.asList("public_profile,user_events,user_actions.music,user_likes,rsvp_event"));
         login_button.registerCallback(callBackManager, callback);
 
         text = (TextView) view.findViewById(R.id.text_details);
@@ -92,6 +95,9 @@ public class LoginManager extends Fragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callBackManager.onActivityResult(requestCode, resultCode, data);
+
+     ;
+
     }
 
 

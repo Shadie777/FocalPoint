@@ -15,6 +15,7 @@ import java.net.URL;
 import android.os.AsyncTask;
 
 import com.google.android.gms.analytics.ecommerce.Product;
+import com.seankeating.focalpointModel.UserAccessToken;
 
 /**
  * Created by Sean on 13/01/2016.
@@ -25,8 +26,8 @@ public class InitiateConnection {
 
 
 public static void main(double lat, double lon){
-    AccessToken accessToken;
-    accessToken = AccessToken.getCurrentAccessToken();
+    String accessToken;
+    accessToken = UserAccessToken.getAccessToken();
 
     //new ClientGet(lat, lon, accessToken).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
