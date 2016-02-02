@@ -6,6 +6,8 @@ import android.os.Build;
 import android.util.Log;
 
 import com.facebook.AccessToken;
+import com.google.gson.Gson;
+import com.seankeating.focalpointModel.Event;
 
 import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.json.JSONArray;
@@ -22,7 +24,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 /**
  * Created by Sean on 22/01/2016.
  */
@@ -32,7 +37,7 @@ public class ClientGet extends AsyncTask<Double, Integer, String> {
     double lat;
     double lon;
     String accessToken;
-  int failures;
+    int failures;
     public static final String TAG = ClientGet.class.getSimpleName();
 
     public ClientGet(double lat, double lon, String accessToken){
@@ -45,13 +50,18 @@ public class ClientGet extends AsyncTask<Double, Integer, String> {
     protected String doInBackground (Double... params) {
 
         Log.i(TAG, "do in background");
-        String urlString = ("http://192.168.42.69:3000/events?lat=" + lat + "&lng=" + lon + "&distance=1000&sort=venue&access_token=" + accessToken);
+        String urlString = ("http://192.168.42.69:3000/events?lat=" + lat + "&lng=" + lon + "&distance=1000&sort=venue&access_token=");
+                //"1038263616207618|iuAkTxRvDGNVRZUSdqfz4M4T6aU");
         InputStream in = null;
         int resCode = -1;
 
         BufferedReader br = null;
         String data = null;
         String output= null;
+
+
+        Gson gson = new Gson();
+
         try {
             //HttpClient httpClient = new HttpClient();
 
@@ -69,7 +79,16 @@ public class ClientGet extends AsyncTask<Double, Integer, String> {
 
             System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+
+                String json = new Gson().toJson(output);
+                Type type = new TypeToken<List<Event>>(){}.getType();
+                List<Event> eventList = gson.fromJson(json, type);
+                for (int i=0;i<eventList.size();i++) {
+                    Event x = eventList.get(i);
+                    System.out.println(x);
+                }
+               // System.out.println(output);
+
             }
 
             httpConn.disconnect();
