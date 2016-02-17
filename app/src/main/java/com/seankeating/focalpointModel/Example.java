@@ -21,9 +21,7 @@ public class Example {
      * @return
      * The events
      */
-    public List<Event> getEvents() {
-        return events;
-    }
+    public List<Event> getEvents() {return events;}
 
     /**
      *
