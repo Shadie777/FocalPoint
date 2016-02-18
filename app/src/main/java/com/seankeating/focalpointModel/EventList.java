@@ -7,11 +7,11 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Example {
+public class EventList {
 
     @SerializedName("events")
     @Expose
-    private List<Event> events = new ArrayList<Event>();
+    private List<Event> events;
     @SerializedName("metadata")
     @Expose
     private MetaData metadata;

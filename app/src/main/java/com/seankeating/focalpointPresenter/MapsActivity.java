@@ -27,9 +27,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointModel.Event;
+import com.seankeating.focalpointModel.EventList;
 import com.seankeating.focalpointModel.VenueLocation;
 
 import java.io.BufferedReader;
@@ -43,15 +49,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.spec.ECField;
 import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,OnMapReadyCallback, LocationListener
-{
+        GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, LocationListener {
 
-    private GoogleMap mMap;
+    private static GoogleMap mMap;
     public LocationManager locationManager;
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -79,7 +85,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setInterval(10*1000)
+                .setInterval(10 * 1000)
                 .setFastestInterval(1 * 1000);
     }
 
@@ -109,11 +115,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         mMap.setMyLocationEnabled(true);
 
-        if (location == null){
+        if (location == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
-        }else{
-             handleNewLocation(location);
+        } else {
+            handleNewLocation(location);
         }
 
         Log.i(TAG, "Location services connected.");
@@ -126,15 +132,15 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-    if(connectionResult.hasResolution()){
-        try{
-          connectionResult.startResolutionForResult(this, CONN_FAILURE_RES_REQUEST);
-        }catch (IntentSender.SendIntentException e){
-           e.printStackTrace();
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, CONN_FAILURE_RES_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
-     }else{
-        Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
-    }
     }
 
     private void handleNewLocation(Location location) {
@@ -153,12 +159,14 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        getEvents mGetEvents = new getEvents(currentLat, currentLon);
+        mGetEvents.execute();
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-      //  setUpMapIfNeeded();
+        //  setUpMapIfNeeded();
         mGoogleApiClient.connect();
     }
 
@@ -178,30 +186,52 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
 
-    public void onMyLocationButtonClick(){
+    public void onMyLocationButtonClick() {
 
+    }
+
+    public static void displayEvents(List<Event> eventList){
+
+        for (int i = 0; i < eventList.size(); i++) {
+            Event event = eventList.get(i);
+            System.out.println(event);
+            VenueLocation vl = event.getVenueLocation();
+            System.out.println(vl);
+            String venueTitle = event.getVenueName();
+            String eventTitle = event.getEventName();
+
+            LatLng pos = new LatLng(vl.getLatitude(), vl.getLongitude());
+
+            MarkerOptions options = new MarkerOptions()
+                    .position(pos)
+                    .title(venueTitle)
+                    .snippet(eventTitle)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+
+            mMap.addMarker(options);
+        }
     }
 }
 
-class getEvents extends AsyncTask<Double, Integer, String> {
+ class getEvents extends AsyncTask<Double, Integer, List<Event>> {
 
     double lat;
     double lon;
     public static final String TAG = getEvents.class.getSimpleName();
-    public List<Event>eventList = new ArrayList<Event>();
+    public List<Event> eventList = new ArrayList<Event>();
 
-    private GoogleMap mMap;
 
-    public getEvents(double lat, double lon){
+    public getEvents(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
     }
 
     @Override
-    protected String doInBackground (Double... params) {
+    protected List<Event> doInBackground(Double... params) {
 
         Log.i(TAG, "do in background");
-        String urlString = ("http://192.168.42.69:3000/events?lat=" + lat + "&lng=" + lon + "&distance=1000&sort=venue&access_token=");
+        String urlString = ("http://192.168.42.69:3000/events?lat=" + lat + "&lng=" + lon + "&distance=2500&sort=venue&access_token=");
         //"1038263616207618|iuAkTxRvDGNVRZUSdqfz4M4T6aU");
         InputStream in = null;
         int resCode = -1;
@@ -209,6 +239,7 @@ class getEvents extends AsyncTask<Double, Integer, String> {
         BufferedReader br = null;
         String output = null;
 
+        Gson gson = new Gson();
 
 
         try {
@@ -229,9 +260,30 @@ class getEvents extends AsyncTask<Double, Integer, String> {
             System.out.println("Output from Server .... \n");
 
 
-            while ((output = br.readLine()) != null) {
+            while ( (output = br.readLine()) != null) {
 
-                return output;
+
+//                Type type = new TypeToken<Collection<Event>>(){}.getType();
+//                System.out.println(output);
+//                Collection<Event> eventList = gson.fromJson(output, type);
+//
+                JsonParser parser = new JsonParser();
+                JsonObject rootObejct = parser.parse(output).getAsJsonObject();
+                JsonElement eventElement = rootObejct.get("events");
+
+                List<Event> projectList = new ArrayList<>();
+
+//Check if "project" element is an array or an object and parse accordingly...
+                if (eventElement.isJsonObject()) {
+                    //The returned list has only 1 element
+                    Event Event = gson.fromJson(eventElement, Event.class);
+                    eventList.add(Event);
+                }
+                else if (eventElement.isJsonArray()) {
+                    //The returned list has >1 elements
+                    Type type = new TypeToken<List<Event>>() {}.getType();
+                    eventList = gson.fromJson(eventElement, type);
+                }
 
 
             }
@@ -245,53 +297,21 @@ class getEvents extends AsyncTask<Double, Integer, String> {
         } catch (URISyntaxException e) {
             e.printStackTrace();
 
+        }catch (JsonSyntaxException e){
+            e.printStackTrace();
         }
 
-        return output;
+        return eventList;
     }
 
 
     //runs on UI thread and therefore has access to UI Objects unlike doinBackground
 
     @Override
-    protected void onPostExecute(String output) {
+    protected void onPostExecute(List<Event> eventList) {
         System.out.println("post .... \n");
 
-        Gson gson = new Gson();
-
-        String json = new Gson().toJson(output);
-        Type type = new TypeToken<List<Event>>() {
-        }.getType();
-        eventList = gson.fromJson(json, type);
-
-        for (int i = 0; i < eventList.size(); i++) {
-            Event x = eventList.get(i);
-            VenueLocation vl = x.getVenueLocation();
-            System.out.println(vl);
-            System.out.println(x);
-
-        }
-        System.out.println(output);
-
-
-        for (int i = 0; i < eventList.size(); i++) {
-            Event event = eventList.get(i);
-            System.out.println(event);
-            VenueLocation vl = event.getVenueLocation();
-            System.out.println(vl);
-            String venueTitle = event.getVenueName();
-            String eventTitle = event.getEventName();
-
-            LatLng pos = new LatLng(vl.getLatitude(),vl.getLongitude());
-
-            MarkerOptions options = new MarkerOptions()
-                    .position(pos)
-                    .title(venueTitle)
-                    .snippet(eventTitle)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-
-
-            mMap.addMarker(options);        }
+        MapsActivity.displayEvents(eventList);
     }
 }
 
