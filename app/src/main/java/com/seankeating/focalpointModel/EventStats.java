@@ -2,10 +2,13 @@ package com.seankeating.focalpointModel;
 
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class EventStats {
+public class EventStats implements Parcelable {
 
     @SerializedName("attendingCount")
     @Expose
@@ -92,4 +95,38 @@ public class EventStats {
         this.noreplyCount = noreplyCount;
     }
 
+
+
+    public EventStats(Parcel in){
+        String[] data = new String[3];
+        this.attendingCount= Integer.parseInt(data[0]);
+        this.declinedCount= Integer.parseInt(data[1]);
+        this.maybeCount= Integer.parseInt(data[2]);
+        this.noreplyCount= Integer.parseInt(data[3]);
+
+    }
+
+    public int describeContents(){
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeStringArray(new String[]{Integer.toString(this.attendingCount),
+                Integer.toString(this.declinedCount),
+                Integer.toString(this.maybeCount),
+                Integer.toString(this.noreplyCount)});
+
+
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public EventStats createFromParcel(Parcel in) {
+            return new EventStats(in);
+        }
+
+        public EventStats[] newArray(int size) {
+            return new EventStats[size];
+        }
+    };
 }

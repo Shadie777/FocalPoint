@@ -32,15 +32,14 @@
             </intent-filter>
         </activity>
 
-         <meta-data
-         android:name="com.google.android.geo.API_KEY"
-         android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
-
-         <activity
-         android:name="com.seankeating.focalpointPresenter.MapsActivity"
-         android:label="@string/title_activity_maps">
-         </activity>
+        <activity
+            android:name="com.seankeating.focalpointPresenter.MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
+        <activity android:name="com.seankeating.focalpointViews.DisplayEventDetails"></activity>
     </application>
 
 </manifest>

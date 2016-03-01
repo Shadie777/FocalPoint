@@ -1,8 +1,11 @@
 package com.seankeating.focalpointModel;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class VenueLocation {
+public class VenueLocation implements Parcelable {
 
     @SerializedName("city")
     @Expose
@@ -152,4 +155,47 @@ public class VenueLocation {
         this.zip = zip;
     }
 
+
+
+    public VenueLocation(Parcel in){
+        String[] data = new String[4];
+        Double[] locationdata = new Double[1];
+
+        this.city = data[0];
+        this.country = data[1];
+        this.latitude = locationdata[0];
+        this.longitude = locationdata[1];
+        this.state = data[2];
+        this.street = data[3];
+        this.zip = data[4];
+
+    }
+
+    public int describeContents(){
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.readDoubleArray(new double[]{this.latitude,
+        this.longitude});
+
+        dest.writeStringArray(new String[]{this.city,
+                this.country,
+                this.state,
+                this.street,
+                this.zip});
+
+
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public VenueLocation createFromParcel(Parcel in) {
+            return new VenueLocation(in);
+        }
+
+        public VenueLocation[] newArray(int size) {
+            return new VenueLocation[size];
+        }
+    };
 }

@@ -1,8 +1,11 @@
 package com.seankeating.focalpointModel;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Event {
+public class Event implements Parcelable {
 
     @SerializedName("venueId")
     @Expose
@@ -299,4 +302,57 @@ public class Event {
         this.eventStats = eventStats;
     }
 
+
+    public Event(Parcel in){
+        String[] data = new String[10];
+        eventStats = (EventStats) in.readParcelable(EventStats.class.getClassLoader());
+        venueLocation = (VenueLocation) in.readParcelable(VenueLocation.class.getClassLoader());
+        in.readStringArray(data);
+        this.venueId = data[0];
+        this.venueName = data[1];
+        this.venueCoverPicture = data[2];
+        this.eventId = data[3];
+        this.eventName = data[4];
+        this.eventCoverPicture = data[5];
+        this.eventProfilePicture = data[6];
+        this.eventDescription = data[7];
+        this.eventStarttime = data[8];
+        this.eventDistance = data[9];
+        this.eventTimeFromNow = Integer.parseInt(data[10]);
+
+    }
+
+    public int describeContents(){
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeParcelable(eventStats, flags);
+        dest.writeParcelable(venueLocation, flags);
+        dest.writeStringArray(new String[]{this.venueId,
+                this.venueName,
+                this.venueCoverPicture,
+                this.eventId,
+                this.eventName,
+                this.eventCoverPicture,
+                this.eventProfilePicture,
+                this.eventDescription,
+                this.eventDescription,
+                this.eventStarttime,
+                this.eventDistance,
+                Integer.toString(this.eventTimeFromNow )});
+
+
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 }
