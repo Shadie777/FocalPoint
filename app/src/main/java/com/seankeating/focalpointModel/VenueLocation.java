@@ -158,16 +158,13 @@ public class VenueLocation implements Parcelable {
 
 
     public VenueLocation(Parcel in){
-        String[] data = new String[4];
-        Double[] locationdata = new Double[1];
-
-        this.city = data[0];
-        this.country = data[1];
-        this.latitude = locationdata[0];
-        this.longitude = locationdata[1];
-        this.state = data[2];
-        this.street = data[3];
-        this.zip = data[4];
+        this.city = in.readString();
+        this.country = in.readString();
+        this.latitude = (Double) in.readSerializable();
+        this.longitude = (Double) in.readSerializable();
+        this.state = in.readString();
+        this.street = in.readString();
+        this.zip = in.readString();
 
     }
 
@@ -177,16 +174,13 @@ public class VenueLocation implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
-        dest.readDoubleArray(new double[]{this.latitude,
-        this.longitude});
-
-        dest.writeStringArray(new String[]{this.city,
-                this.country,
-                this.state,
-                this.street,
-                this.zip});
-
+        dest.writeString(this.city);
+        dest.writeString(this.country);
+        dest.writeSerializable(this.latitude);
+        dest.writeSerializable(this.longitude);
+        dest.writeString(this.state);
+        dest.writeString(this.street);
+        dest.writeString(this.zip);
 
     }
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

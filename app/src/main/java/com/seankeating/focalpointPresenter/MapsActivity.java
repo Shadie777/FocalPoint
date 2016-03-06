@@ -217,20 +217,23 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
     public void onInfoWindowClick(Marker marker) {
+        Event event = eventMarkerMap.get(marker);
+        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
+        intent.putExtra("Event", event);
+        startActivity(intent);
 
-
-                // if (mLocation == null) return;
-                LatLng latLon = marker.getPosition();
-                String title = marker.getTitle();
-                //Cycle through places array
-                for (Event e : eventList1) {
-                    if (title.equals(e.getEventName())) {
-                        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-                        intent.putExtra("Event", e);
-                        startActivity(intent);
-                    }
-
-                }
+//                // if (mLocation == null) return;
+//                LatLng latLon = marker.getPosition();
+//                String title = marker.getTitle();
+//                //Cycle through places array
+//                for (Event e : eventList1) {
+//                    if (title.equals(e.getEventName())) {
+//                        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
+//                        intent.putExtra("Event", e);
+//                        startActivity(intent);
+//                    }
+//
+//                }
             }
 //
 

@@ -27,8 +27,8 @@ public class DisplayEventDetails extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_event_details);
         TextView tv = (TextView) findViewById(R.id.EventTitle);
-        tv.setText(event.getEventName());
-
+        String eventName = event.getEventName();
+        tv.setText(eventName);
 
     }
 }

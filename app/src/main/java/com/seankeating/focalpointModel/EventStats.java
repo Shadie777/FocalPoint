@@ -98,12 +98,13 @@ public class EventStats implements Parcelable {
 
 
     public EventStats(Parcel in){
-        String[] data = new String[3];
-        this.attendingCount= Integer.parseInt(data[0]);
-        this.declinedCount= Integer.parseInt(data[1]);
-        this.maybeCount= Integer.parseInt(data[2]);
-        this.noreplyCount= Integer.parseInt(data[3]);
+        this.attendingCount = (Integer) in.readSerializable();
 
+        this.declinedCount = (Integer) in.readSerializable();
+
+        this.maybeCount = (Integer) in.readSerializable();
+
+        this.noreplyCount = (Integer) in.readSerializable();
     }
 
     public int describeContents(){
@@ -113,11 +114,10 @@ public class EventStats implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeStringArray(new String[]{Integer.toString(this.attendingCount),
-                Integer.toString(this.declinedCount),
-                Integer.toString(this.maybeCount),
-                Integer.toString(this.noreplyCount)});
-
+        dest.writeSerializable(this.attendingCount);
+        dest.writeSerializable(this.declinedCount );
+        dest.writeSerializable(this.maybeCount);
+        dest.writeSerializable(this.noreplyCount);
 
     }
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
