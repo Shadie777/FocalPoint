@@ -1,19 +1,39 @@
 package com.seankeating.focalpointPresenter;
 
 import android.Manifest;
+import android.app.ActionBar;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.facebook.login.LoginResult;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -55,72 +75,159 @@ import java.net.URLConnection;
 import java.security.spec.ECField;
 import java.util.ArrayList;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback,
-        LocationListener, GoogleMap.OnInfoWindowClickListener{
+        LocationListener, GoogleMap.OnInfoWindowClickListener {
+
+    private static int mYear;
+    private static int mMonth;
+    private static int mDay;
+
+    static final int DATE_DIALOG_ID = 0;
+
+    private ActionBar actionBar;
+    TextView datetext;
+    // Refresh menu item
+    public MenuItem refreshMenuItem;
+
 
     private static GoogleMap mMap;
-    public LocationManager locationManager;
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
     Location mLocation;
     private final static int CONN_FAILURE_RES_REQUEST = 9000;
     private LocationRequest mLocationRequest;
-    static HashMap<Marker, Event> eventMarkerMap;
+    static HashMap<Marker, Event> eventMarkerMap = new HashMap<Marker, Event>();
     LatLng latLng;
     public static List<Event> eventList1 = new ArrayList<Event>();
+
+    public MapsActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        // get action bar
+        ActionBar actionBar = getActionBar();
+
+        // Enabling Up / Back navigation
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
         //initialise client
+        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
-                .build();
+                .addApi(AppIndex.API).build();
 
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setInterval(10 * 1000)
                 .setFastestInterval(1 * 1000);
-
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_actions, menu);
+
+         datetext = new TextView(this);
+        datetext.setText(new StringBuilder()
+                // Month is 0 based so add 1
+                .append(mMonth + 1).append("-")
+                .append(mDay).append("-")
+                .append(mYear).append(" "));
+        datetext.setPadding(5, 0, 5, 0);
+        datetext.setTypeface(null, Typeface.BOLD);
+        datetext.setTextSize(14);
+        menu.add(0, Menu.FIRST, 1, "").setActionView(datetext).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                showDialog(DATE_DIALOG_ID);
+
+                return true;
+            case R.id.action_refresh:
+                double currentLat = mLocation.getLatitude();
+                double currentLon = mLocation.getLongitude();
+                refreshMenuItem = item;
+                getEvents mGetEvents = new getEvents(currentLat, currentLon);
+                mGetEvents.execute();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                public void onDateSet(DatePicker view, int year,
+                                      int monthOfYear, int dayOfMonth) {
+                    mYear = year;
+                    mMonth = monthOfYear;
+                    mDay = dayOfMonth;
+                    updateDisplay();
+
+                    //getEvents mGetEvents = new getEvents(currentLat, currentLon);
+                    //mGetEvents.execute();
+
+                }
+            };
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_DIALOG_ID:
+                return new DatePickerDialog(this,
+                        mDateSetListener,
+                        mYear, mMonth, mDay);
+        }
+
+        return null;
+    }
+
+    private void updateDisplay() {
+        this.datetext.setText(
+                new StringBuilder()
+                        // Month is 0 based so add 1
+                        .append(mMonth + 1).append("-")
+                        .append(mDay).append("-")
+                        .append(mYear).append(" "));
+
+        double currentLat = mLocation.getLatitude();
+        double currentLon = mLocation.getLongitude();
+        getEvents mGetEvents = new getEvents(currentLat, currentLon);
+        mGetEvents.execute();
+    }
 
     private void setUpMap() {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
 
         mMap.setOnInfoWindowClickListener(this);
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                // if (mLocation == null) return;
-//                LatLng latLon = marker.getPosition();
-//                String title = marker.getTitle();
-//                //Cycle through places array
-//                for (Event e : eventList1) {
-//                    if (title.equals(e.getEventName())) {
-//                        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-//                        intent.putExtra("Event", e);
-//                        startActivity(intent);
-//                    }
-//
-//                }
-//            }
-//        });
+
     }
 
     /**
@@ -186,64 +293,30 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         latLng = new LatLng(currentLat, currentLon);
 
+//
+//        MarkerOptions options = new MarkerOptions()
+//                .draggable(true)
+//                .position(latLng)
+//                .title("You");
 
-        MarkerOptions options = new MarkerOptions()
-                .draggable(true)
-                .position(latLng)
-                .title("You");
-
-        mMap.addMarker(options);
-        //   mMap.setOnMarkerClickListener(this);
+       // mMap.addMarker(options);
 
         getEvents mGetEvents = new getEvents(currentLat, currentLon);
         mGetEvents.execute();
         setUpMap();
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                for (Map.Entry<Marker, Event> entry : eventMarkerMap.entrySet()) {
-//
-//                    Marker myMarker = entry.getKey();
-//                    if (marker.equals(myMarker) && marker.equals(entry.getKey())) {
-//                        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-//                        Event x = entry.getValue();
-//                        intent.putExtra("Event", x);
-//                        startActivity(intent);
-//
-//                    }
-//                }
-//            }
-//        });
+
     }
 
     public void onInfoWindowClick(Marker marker) {
+
         Event event = eventMarkerMap.get(marker);
         Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-        intent.putExtra("Event", event);
+        intent.putExtra("Event", (Parcelable) event);
         startActivity(intent);
-
-//                // if (mLocation == null) return;
-//                LatLng latLon = marker.getPosition();
-//                String title = marker.getTitle();
-//                //Cycle through places array
-//                for (Event e : eventList1) {
-//                    if (title.equals(e.getEventName())) {
-//                        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-//                        intent.putExtra("Event", e);
-//                        startActivity(intent);
-//                    }
-//
-//                }
-            }
-//
-
-//        Event event = eventMarkerMap.get(marker);
-//        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-//        intent.putExtra("Event", event);
-//        startActivity(intent);
+    }
 
 
-    @Override
+@Override
     protected void onResume() {
         super.onResume();
         //  setUpMapIfNeeded();
@@ -263,35 +336,47 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
-
-
     }
 
-
-    public void onMyLocationButtonClick() {
-
-    }
 
     public static void displayEvents(List<Event> eventList) {
+        String actualdate =  new StringBuilder()
+                // Month is 0 based so add 1
+                .append(mYear).append("-")
+                .append("0").append(mMonth + 1).append("-")
+                .append(mDay).toString();
 
-        eventMarkerMap = new HashMap<Marker, Event>();
+        System.out.println(actualdate);
+//      eventMarkerMap = new HashMap<Marker, Event>();
+
+       mMap.clear();
+
+
+
         for (int i = 0; i < eventList.size(); i++) {
             Event event = eventList.get(i);
-            eventList1.add(event);
-            System.out.println(event);
+            if(eventList1.size() == 0) {
+                eventList1.add(event);
+            }
+            String datetime = event.getEventStarttime();
+            String date = datetime.substring(0, 10);
+
             VenueLocation vl = event.getVenueLocation();
-            System.out.println(vl);
             String venueTitle = event.getVenueName();
             String eventTitle = event.getEventName();
-
+          //  System.out.println(date);
             LatLng pos = new LatLng(vl.getLatitude(), vl.getLongitude());
-            Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(pos)
-                    .title(venueTitle)
-                    .snippet(eventTitle)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-            eventMarkerMap.put(m, event);
+            if(actualdate.contentEquals(date)) {
+                System.out.println("true");
+                Marker m = mMap.addMarker(new MarkerOptions()
+                        .position(pos)
+                        .title(venueTitle)
+                        .snippet(eventTitle)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+                eventMarkerMap.put(m, event);
+           }
 
         }
 
@@ -299,125 +384,120 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     }
 
 
-//    @Override
-//    public boolean onMarkerClick(final Marker marker) {
-//
-//
-//        for (Map.Entry<Marker, Event> entry : eventMarkerMap.entrySet()) {
-//
-//            if (marker.equals(myMarker) && marker.equals(entry.getKey())) {
-//                Intent intent = new Intent(this, DisplayEventDetails.class);
-//                Event x = entry.getValue();
-//                intent.putExtra("Event", x);
-//                startActivity(intent);
-//
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//}
+    private class getEvents extends AsyncTask<Double, Integer, List<Event>> {
 
-}
+        double lat;
+        double lon;
+        public  final String TAG = getEvents.class.getSimpleName();
+        public List<Event> eventList = new ArrayList<Event>();
 
 
+        public getEvents(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
 
-class getEvents extends AsyncTask<Double, Integer, List<Event>> {
+        @Override
+        protected void onPreExecute() {
+            // set the progress bar view
 
-    double lat;
-    double lon;
-    public static final String TAG = getEvents.class.getSimpleName();
-    public List<Event> eventList = new ArrayList<Event>();
+            if(refreshMenuItem != null) {
+                refreshMenuItem.setActionView(R.layout.action_progressbar);
 
-
-    public getEvents(double lat, double lon) {
-        this.lat = lat;
-        this.lon = lon;
-    }
-
-    @Override
-    protected List<Event> doInBackground(Double... params) {
-
-        Log.i(TAG, "do in background");
-        // home 192.168.42.158
-        // brighton 192.168.42.69
-        String urlString = ("http://192.168.42.158:3000/events?lat=" + lat + "&lng=" + lon + "&distance=3500&sort=venue&access_token=");
-        //"1038263616207618|iuAkTxRvDGNVRZUSdqfz4M4T6aU");
-        InputStream in = null;
-        int resCode = -1;
-
-        BufferedReader br = null;
-        String output = null;
-
-        Gson gson = new Gson();
+                refreshMenuItem.expandActionView();
+            }
+        }
 
 
-        try {
-            //HttpClient httpClient = new HttpClient();
+        @Override
+        protected List<Event> doInBackground(Double... params) {
 
-            URL url = new URL(urlString);
-            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-            url = uri.toURL();
-            URLConnection urlConn = url.openConnection();
-            HttpURLConnection httpConn = (HttpURLConnection) urlConn;
+            Log.i(TAG, "do in background");
+            // home 192.168.42.158
+            // brighton 192.168.42.69
+            String urlString = ("http://192.168.42.158:3000/events?lat=" + lat + "&lng=" + lon + "&distance=3500&sort=venue&access_token=");
+            //"1038263616207618|iuAkTxRvDGNVRZUSdqfz4M4T6aU");
+            InputStream in = null;
+            int resCode = -1;
 
-            httpConn.setRequestMethod("GET");
-            httpConn.setRequestProperty("Accept", "application/json");
+            BufferedReader br = null;
+            String output = null;
 
-            br = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-
-
-            System.out.println("Output from Server .... \n");
+            Gson gson = new Gson();
 
 
-            while ((output = br.readLine()) != null) {
+            try {
+                //HttpClient httpClient = new HttpClient();
 
-                JsonParser parser = new JsonParser();
-                JsonObject rootObejct = parser.parse(output).getAsJsonObject();
-                JsonElement eventElement = rootObejct.get("events");
+                URL url = new URL(urlString);
+                URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+                url = uri.toURL();
+                URLConnection urlConn = url.openConnection();
+                HttpURLConnection httpConn = (HttpURLConnection) urlConn;
 
-                List<Event> projectList = new ArrayList<>();
+                httpConn.setRequestMethod("GET");
+                httpConn.setRequestProperty("Accept", "application/json");
 
-//Check if "project" element is an array or an object and parse accordingly...
-                if (eventElement.isJsonObject()) {
-                    //The returned list has only 1 element
-                    Event Event = gson.fromJson(eventElement, Event.class);
-                    eventList.add(Event);
-                } else if (eventElement.isJsonArray()) {
-                    //The returned list has >1 elements
-                    Type type = new TypeToken<List<Event>>() {
-                    }.getType();
-                    eventList = gson.fromJson(eventElement, type);
+                br = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+
+
+                System.out.println("Output from Server .... \n");
+
+
+                while ((output = br.readLine()) != null) {
+
+                    JsonParser parser = new JsonParser();
+                    JsonObject rootObejct = parser.parse(output).getAsJsonObject();
+                    JsonElement eventElement = rootObejct.get("events");
+
+
+
+//Check if  element is an array or an object
+                    if (eventElement.isJsonObject()) {
+                        //The returned list has only 1 element
+                        Event Event = gson.fromJson(eventElement, Event.class);
+                        eventList.add(Event);
+                    } else if (eventElement.isJsonArray()) {
+                        //The returned list has >1 elements
+                        Type type = new TypeToken<List<Event>>() {
+                        }.getType();
+                        eventList = gson.fromJson(eventElement, type);
+                    }
+
+
                 }
 
+                httpConn.disconnect();
+            } catch (MalformedURLException e) {
 
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
             }
 
-            httpConn.disconnect();
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-
-        } catch (JsonSyntaxException e) {
-            e.printStackTrace();
+            return eventList;
         }
 
-        return eventList;
+
+        //runs on UI thread and therefore has access to UI Objects unlike doinBackground
+
+        @Override
+        protected void onPostExecute(List<Event> eventList) {
+            System.out.println("post .... \n");
+
+            if(refreshMenuItem != null) {
+                refreshMenuItem.collapseActionView();
+                // remove the progress bar view
+                refreshMenuItem.setActionView(null);
+            }
+            MapsActivity.displayEvents(eventList);
+        }
     }
 
 
-    //runs on UI thread and therefore has access to UI Objects unlike doinBackground
-
-    @Override
-    protected void onPostExecute(List<Event> eventList) {
-        System.out.println("post .... \n");
-
-        MapsActivity.displayEvents(eventList);
-    }
 }
-
-

@@ -22,9 +22,12 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="FocalPoint"
         </activity>
-        <activity android:name="com.seankeating.focalpointPresenter.LoginActivity">
+        <activity android:name="com.seankeating.focalpointPresenter.LoginActivity"
             android:label="FocalPoint"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,8 +41,16 @@
 
         <activity
             android:name="com.seankeating.focalpointPresenter.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name="com.seankeating.focalpointViews.DisplayEventDetails"></activity>
+            android:label="@string/title_activity_maps"
+            ></activity>
+        <activity android:name="com.seankeating.focalpointViews.DisplayEventDetails"
+            android:screenOrientation="portrait"
+            ></activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

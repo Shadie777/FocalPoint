@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.seankeating.focalpointViews.DisplayEventDetails">
+    >
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,19 +20,6 @@
         android:layout_alignLeft="@+id/textView3"
         android:layout_alignStart="@+id/textView3" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="150dp"
-        android:scaleType="fitXY"
-        android:adjustViewBounds="true"
-        android:layout_below="@+id/EventTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/imageView"
-        android:layout_above="@+id/dateview" />
-
     <EditText
         android:layout_width="250dp"
         android:layout_height="wrap_content"
@@ -39,11 +27,11 @@
         android:clickable="false"
         android:editable="false"
         android:inputType="none"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/EventTitle"
+        android:layout_alignRight="@+id/timeView"
+        android:layout_alignEnd="@+id/timeView"
         android:layout_alignLeft="@+id/timeView"
-        android:layout_alignStart="@+id/timeView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignStart="@+id/timeView" />
 
 
     <EditText
@@ -53,11 +41,11 @@
         android:clickable="false"
         android:editable="false"
         android:inputType="none"
-        android:layout_below="@+id/dateview"
-        android:layout_alignLeft="@+id/descview"
-        android:layout_alignStart="@+id/descview"
-        android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_below="@+id/date"
+        android:layout_alignLeft="@+id/LocationView"
+        android:layout_alignStart="@+id/LocationView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -68,22 +56,9 @@
         android:inputType="none"
         android:layout_below="@+id/timeView"
         android:layout_toRightOf="@+id/textView2"
-        android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/descview"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:clickable="false"
-        android:editable="false"
-        android:inputType="none"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_alignTop="@+id/textView3" />
+        android:layout_alignParentEnd="true" />
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -119,14 +94,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
+    <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Desc:"
-        android:id="@+id/textView3"
-    android:layout_below="@+id/LocationView"
-    android:layout_toLeftOf="@+id/descview"
-    android:layout_toStartOf="@+id/descview" />
+        android:text="More Info"
+        android:id="@+id/display_details"
+        android:layout_below="@+id/LocationView"
+        android:layout_centerHorizontal="true" />
 
-    </RelativeLayout>
+
+</RelativeLayout>

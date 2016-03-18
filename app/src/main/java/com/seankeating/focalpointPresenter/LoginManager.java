@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -45,22 +46,23 @@ public class LoginManager extends Fragment{
             Profile profile = Profile.getCurrentProfile();
 
             if(profile !=null){
-              //  text.setText("Welcome" + profile.getName());
                 String accessToken= loginResult.getAccessToken().getToken();
-
-
                 new UserAccessToken(accessToken);
+
             }
         }
 
         @Override
         public void onCancel() {
-         text.setText("Login attempt canceled");
+            Toast.makeText(getActivity(),   "Login attempt canceled",
+                    Toast.LENGTH_LONG).show();
+
         }
 
         @Override
         public void onError(FacebookException error) {
-            text.setText("Login Error");
+            Toast.makeText(getActivity(),   "Error",
+                    Toast.LENGTH_LONG).show();
         }
     };
 
@@ -97,7 +99,7 @@ public class LoginManager extends Fragment{
         super.onActivityResult(requestCode, resultCode, data);
         callBackManager.onActivityResult(requestCode, resultCode, data);
 
-     ;
+
 
     }
 

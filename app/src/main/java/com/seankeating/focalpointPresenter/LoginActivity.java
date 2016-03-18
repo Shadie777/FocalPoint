@@ -40,9 +40,10 @@ public class LoginActivity extends FragmentActivity {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
-            Intent intent = new Intent();
-            intent.setClass(this, MapsActivity.class);
-            this.startActivity(intent);
-        //  loginfragment.onActivityResult(requestCode, resultCode, data);
+
+        if ( resultCode == RESULT_OK && null != data) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+        }
     }
 }
