@@ -4,35 +4,22 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.login.LoginResult;
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,13 +30,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -57,9 +42,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointModel.Event;
-import com.seankeating.focalpointModel.EventList;
 import com.seankeating.focalpointModel.VenueLocation;
-import com.seankeating.focalpointViews.DisplayEventDetails;
+import com.seankeating.focalpointViews.ScreenSliderActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,42 +56,44 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback,
-        LocationListener, GoogleMap.OnInfoWindowClickListener {
+        LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener {
 
+    //list of variables storing the date
     private static int mYear;
     private static int mMonth;
     private static int mDay;
 
     static final int DATE_DIALOG_ID = 0;
 
-    private ActionBar actionBar;
+    //variable storing the date text view
     TextView datetext;
+
     // Refresh menu item
     public MenuItem refreshMenuItem;
 
-
+   //google maps variable storage
     private static GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    public static final String TAG = MapsActivity.class.getSimpleName();
-    Location mLocation;
-    private final static int CONN_FAILURE_RES_REQUEST = 9000;
-    private LocationRequest mLocationRequest;
-    static HashMap<Marker, Event> eventMarkerMap = new HashMap<Marker, Event>();
+    Location mLocation; //store location
+    private final static int CONN_FAILURE_RES_REQUEST = 9000; //connection failure
+    private LocationRequest mLocationRequest; //location request
     LatLng latLng;
+
+    //hashmap storing marker with event
+    static HashMap<Marker, Event> eventMarkerMap = new HashMap<Marker, Event>();
+    //storage of event objects
     public static List<Event> eventList1 = new ArrayList<Event>();
 
-    public MapsActivity() {
-    }
+    //used for testing
+    public static final String TAG = MapsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,15 +153,18 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         switch (item.getItemId()) {
             case R.id.action_filter:
                 showDialog(DATE_DIALOG_ID);
-
                 return true;
             case R.id.action_refresh:
                 double currentLat = mLocation.getLatitude();
                 double currentLon = mLocation.getLongitude();
                 refreshMenuItem = item;
+                mMap.clear();
                 getEvents mGetEvents = new getEvents(currentLat, currentLon);
                 mGetEvents.execute();
                 return true;
+            case R.id.action_tutorial:
+                Intent intent = new Intent(MapsActivity.this, ScreenSliderActivity.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -218,6 +207,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         double currentLat = mLocation.getLatitude();
         double currentLon = mLocation.getLongitude();
+        mMap.clear();
         getEvents mGetEvents = new getEvents(currentLat, currentLon);
         mGetEvents.execute();
     }
@@ -227,7 +217,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
 
         mMap.setOnInfoWindowClickListener(this);
-
+        mMap.setOnMapClickListener(this);
     }
 
     /**
@@ -246,7 +236,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
-
     }
 
     @Override
@@ -292,7 +281,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         double currentLon = location.getLongitude();
 
         latLng = new LatLng(currentLat, currentLon);
-
+        mMap.clear();
 //
 //        MarkerOptions options = new MarkerOptions()
 //                .draggable(true)
@@ -303,8 +292,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         getEvents mGetEvents = new getEvents(currentLat, currentLon);
         mGetEvents.execute();
-        setUpMap();
 
+        setUpMap();
     }
 
     public void onInfoWindowClick(Marker marker) {
@@ -315,6 +304,24 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         startActivity(intent);
     }
 
+    @Override
+    public void onMapClick(LatLng point) {
+        // TODO Auto-generated method stub
+        mMap.clear();
+
+
+        MarkerOptions options = new MarkerOptions()
+               .draggable(true)
+              .position(point)
+                .title("You");
+
+        double lat = point.latitude;
+        double lng = point.longitude;
+
+        mMap.addMarker(options);
+        getEvents mGetEvents = new getEvents(lat, lng);
+        mGetEvents.execute();
+    }
 
 @Override
     protected void onResume() {
@@ -348,9 +355,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         System.out.println(actualdate);
 //      eventMarkerMap = new HashMap<Marker, Event>();
-
-       mMap.clear();
-
 
 
         for (int i = 0; i < eventList.size(); i++) {
@@ -415,7 +419,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             Log.i(TAG, "do in background");
             // home 192.168.42.158
             // brighton 192.168.42.69
-            String urlString = ("http://192.168.42.158:3000/events?lat=" + lat + "&lng=" + lon + "&distance=3500&sort=venue&access_token=");
+            String urlString = ("http://192.168.42.155:3000/events?lat=" + lat + "&lng=" + lon + "&distance=3500&sort=venue&access_token=");
             //"1038263616207618|iuAkTxRvDGNVRZUSdqfz4M4T6aU");
             InputStream in = null;
             int resCode = -1;

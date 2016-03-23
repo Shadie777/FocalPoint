@@ -9,8 +9,8 @@
         tools:ignore="AppCompatResource"
         />
 
-    <item android:id="@+id/action_logout"
-        android:title="Logout"
+    <item android:id="@+id/action_tutorial"
+        android:title="Tutorial"
         android:showAsAction="ifRoom"
         tools:ignore="AppCompatResource"
         />

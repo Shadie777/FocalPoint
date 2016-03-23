@@ -5,6 +5,14 @@ android {
     compileSdkVersion 23
     buildToolsVersion "21.1.2"
 
+
+    sourceSets {
+
+        androidTest {
+            java.srcDirs = ['androidTest/java']
+        }
+    }
+
     defaultConfig {
         applicationId "com.seankeating.focalpoint"
         minSdkVersion 16
@@ -39,6 +47,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'com.jayway.android.robotium:robotium-solo:5.2.1'
 
 }
 

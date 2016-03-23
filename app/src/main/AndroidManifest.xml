@@ -26,11 +26,8 @@
             android:label="FocalPoint"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -43,7 +40,10 @@
             android:name="com.seankeating.focalpointPresenter.MapsActivity"
             android:label="@string/title_activity_maps"
             ></activity>
-        <activity android:name="com.seankeating.focalpointViews.DisplayEventDetails"
+        <activity android:name="com.seankeating.focalpointPresenter.DisplayEventDetails"
+            android:screenOrientation="portrait"
+            ></activity>
+        <activity android:name="com.seankeating.focalpointViews.ScreenSliderActivity"
             android:screenOrientation="portrait"
             ></activity>
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
