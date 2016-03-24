@@ -21,4 +21,11 @@
         android:showAsAction="ifRoom"
         tools:ignore="AppCompatResource"
         />
+
+    <item android:id="@+id/action_logout"
+        android:title="Logout"
+        android:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"
+        />
+
 </menu>

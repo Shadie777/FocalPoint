@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import com.seankeating.focalpoint.R;
 
 
-public class SecondTutorialFragment extends Fragment {
+public class FifthTutorialFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.second_tutorial_fragment, container, false);
+        View v = inflater.inflate(R.layout.fifth_tutorial_fragment, container, false);
         return v;
     }
 }

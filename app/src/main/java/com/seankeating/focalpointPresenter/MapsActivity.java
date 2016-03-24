@@ -19,7 +19,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointModel.Event;
 import com.seankeating.focalpointModel.VenueLocation;
+import com.seankeating.focalpointViews.LoginActivity;
 import com.seankeating.focalpointViews.ScreenSliderActivity;
 
 import java.io.BufferedReader;
@@ -62,9 +65,12 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import android.widget.Toast;
 public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback,
         LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener {
+
+
 
     //list of variables storing the date
     private static int mYear;
@@ -98,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_maps);
 
         final Calendar c = Calendar.getInstance();
@@ -165,11 +172,22 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             case R.id.action_tutorial:
                 Intent intent = new Intent(MapsActivity.this, ScreenSliderActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.action_logout:
+            logout();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+
+    public void logout(){
+        com.facebook.login.LoginManager.getInstance().logOut();
+        Intent i= new Intent(MapsActivity.this,LoginActivity.class);
+        startActivity(i);
+        finish();
+    }
     private DatePickerDialog.OnDateSetListener mDateSetListener =
             new DatePickerDialog.OnDateSetListener() {
                 public void onDateSet(DatePicker view, int year,
@@ -321,6 +339,11 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         mMap.addMarker(options);
         getEvents mGetEvents = new getEvents(lat, lng);
         mGetEvents.execute();
+
+        if (eventMarkerMap == null){
+            Toast.makeText(this,   "No Events",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
 @Override
@@ -381,10 +404,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
                 eventMarkerMap.put(m, event);
            }
-
         }
-
-
     }
 
 
@@ -403,11 +423,10 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         @Override
         protected void onPreExecute() {
-            // set the progress bar view
+            // set the refresh progress bar view
 
             if(refreshMenuItem != null) {
                 refreshMenuItem.setActionView(R.layout.action_progressbar);
-
                 refreshMenuItem.expandActionView();
             }
         }

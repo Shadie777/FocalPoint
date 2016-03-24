@@ -8,8 +8,8 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:id="@+id/imageView2"
-        android:src="@mipmap/tutorial1"
+        android:id="@+id/imageView5"
+        android:src="@mipmap/tutorial5"
 
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -18,14 +18,11 @@
     <TextView
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="@string/tutorial1"
+        android:text="@string/tutorial5"
         android:id="@+id/textView4"
-        android:layout_marginTop="32dp"
-        android:layout_below="@+id/imageView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="38dp"
-        android:layout_marginStart="38dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="38dp" />
 
 </RelativeLayout>
 

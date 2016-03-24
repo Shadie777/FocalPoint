@@ -61,13 +61,19 @@ public class ScreenSliderActivity extends FragmentActivity{
                 return new FirstTutorialFragment();
             case 1:
                 return new SecondTutorialFragment();
+            case 2:
+                return new ThirdTutorialFragment();
+            case 3:
+                return new FourthTutorialFragment();
+            case 4:
+                return new FifthTutorialFragment();
         }
     return null;
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 5;
     }
 }
 

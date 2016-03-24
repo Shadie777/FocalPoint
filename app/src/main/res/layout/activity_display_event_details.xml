@@ -17,7 +17,9 @@
         android:id="@+id/EventTitle"
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/textView3"
-        android:layout_alignStart="@+id/textView3" />
+        android:layout_alignStart="@+id/textView3"
+        android:layout_alignRight="@+id/imageView"
+        android:layout_alignEnd="@+id/imageView" />
 
     <ImageView
         android:layout_width="50dp"
