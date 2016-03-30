@@ -2,31 +2,25 @@ package com.seankeating.focalpointPresenter;
 
 import android.Manifest;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.FacebookSdk;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
@@ -54,10 +48,8 @@ import com.seankeating.focalpointModel.MarkerStateManager;
 import com.seankeating.focalpointModel.VenueLocation;
 import com.seankeating.focalpointViews.LoginActivity;
 import com.seankeating.focalpointViews.ScreenSliderActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -67,17 +59,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import android.widget.Toast;
 
 public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback,
-        LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener {
+        LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapClickListener,
+        GoogleMap.OnMyLocationButtonClickListener {
 
+    //counter for number of events found
+    static int counter = 0;
 
     //list of variables storing the date
     private static int mYear;
@@ -109,8 +102,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     //hashmap storing marker with event
     static HashMap<Marker, Event> eventMarkerMap = new HashMap<Marker, Event>();
-    //storage of event objects
-    public static List<Event> eventList1 = new ArrayList<Event>();
 
     //used for testing
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -131,9 +122,9 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         //initialise client
         // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
@@ -174,18 +165,40 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        double currentLat = mLocation.getLatitude();
+        double currentLon = mLocation.getLongitude();
+        getEvents mGetEvents;
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.action_filter:
+                //if user placed marker
+                if (customLocation != null) {
+                    //save it
+                    MarkerStateManager msm = new MarkerStateManager(this);
+                    msm.saveMapState(customLocation);
+                    customMarker = msm.getSavedMarkerPosition();
+                    msm.delete();
+                }
                 showDialog(DATE_DIALOG_ID);
                 return true;
             case R.id.action_refresh:
-                double currentLat = mLocation.getLatitude();
-                double currentLon = mLocation.getLongitude();
                 refreshMenuItem = item;
                 mMap.clear();
-                getEvents mGetEvents = new getEvents(currentLat, currentLon);
-                mGetEvents.execute();
+
+                //if user placed marker
+                if (customLocation != null) {
+                    //save it
+                    MarkerStateManager msm = new MarkerStateManager(this);
+                    msm.saveMapState(customLocation);
+                    customMarker = msm.getSavedMarkerPosition();
+                    msm.delete();
+
+                    setUpMap();
+                } else {
+                    //otherwise just get events on location
+                    mGetEvents = new getEvents(currentLat, currentLon);
+                    mGetEvents.execute();
+                }
                 return true;
             case R.id.action_tutorial:
                 Intent intent = new Intent(MapsActivity.this, ScreenSliderActivity.class);
@@ -243,11 +256,20 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                         .append(mDay).append("-")
                         .append(mYear).append(" "));
 
+        mMap.clear();
+
         double currentLat = mLocation.getLatitude();
         double currentLon = mLocation.getLongitude();
-        mMap.clear();
-        getEvents mGetEvents = new getEvents(currentLat, currentLon);
-        mGetEvents.execute();
+
+        // if a marker is placed
+        if (customLocation != null) {
+            //filter based on marker
+            setUpMap();
+        } else {
+            // otherwise filter based on location
+            getEvents mGetEvents = new getEvents(currentLat, currentLon);
+            mGetEvents.execute();
+        }
     }
 
     //sets up the map to allow for click listeners and automatic camera moving
@@ -270,10 +292,12 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             //get events around marker
             getEvents mGetEvents = new getEvents(lat, lng);
             mGetEvents.execute();
-        } else{ //else move camera to gps location
+        } else { //else move camera to gps location
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-           mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
-    }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
+        }
+
+        mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMapClickListener(this);
     }
@@ -364,11 +388,18 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     //what happens when marker info window is clicked
     public void onInfoWindowClick(Marker marker) {
 
-        //get event based on the marker and take it into display event details page
-        Event event = eventMarkerMap.get(marker);
-        Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
-        intent.putExtra("Event", (Parcelable) event);
-        startActivity(intent);
+        String markertitle = marker.getTitle();
+        //if click isnt on a custom marker
+        if (markertitle.equals("You")) {
+            //do nothing
+        } else {
+            //get event based on the marker and take it into display event details page
+            Event event = eventMarkerMap.get(marker);
+            Intent intent = new Intent(MapsActivity.this, DisplayEventDetails.class);
+            intent.putExtra("Event", (Parcelable) event);
+            startActivity(intent);
+        }
+
     }
 
 
@@ -403,7 +434,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         //marker stored is remembered and used when activity resumes
         MarkerStateManager msm = new MarkerStateManager(this);
-        customMarker  = msm.getSavedMarkerPosition();
+        customMarker = msm.getSavedMarkerPosition();
         msm.delete();
 
     }
@@ -418,7 +449,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
 
         // if user placed a marker
-        if(customLocation != null) {
+        if (customLocation != null) {
             //store marker in shared preferences
             MarkerStateManager msm = new MarkerStateManager(this);
             msm.saveMapState(customLocation);
@@ -426,6 +457,22 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
     }
 
+    @Override
+    public boolean onMyLocationButtonClick() {
+        mMap.clear();
+        //take lat and lon of point
+        double lat = mLocation.getLatitude();
+        double lng = mLocation.getLongitude();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
+
+        //and get events based on that location
+        getEvents mGetEvents = new getEvents(lat, lng);
+        mGetEvents.execute();
+
+        return true;
+    }
 
     //if the location changes enough, user new location
     @Override
@@ -433,10 +480,15 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         handleNewLocation(location);
     }
 
+    public void DisplayToast() {
+        Activity activity = (Activity) this;
+        Toast.makeText(activity, "No Events!", Toast.LENGTH_LONG).show();
+    }
 
     //display the events taken from facebook
     public static void displayEvents(List<Event> eventList) {
 
+        counter = 0;
         //used to filter based on date
         String actualdate = new StringBuilder()
                 .append(mYear).append("-")
@@ -463,6 +515,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
             //if the date of event matches the filtered date
             if (actualdate.contentEquals(date)) {
+                counter++;
                 // add marker to map and put in marker hashmap
                 Marker m = mMap.addMarker(new MarkerOptions()
                         .position(pos)
@@ -475,7 +528,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
     }
 
-   //asyn task that handles connection to node js server: gets event from events based on location
+    //asyn task that handles connection to node js server: gets event from events based on location
     private class getEvents extends AsyncTask<Double, Integer, List<Event>> {
 
         double lat;
@@ -491,7 +544,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
 
 
-       //what happens before execution of connection
+        //what happens before execution of connection
         @Override
         protected void onPreExecute() {
             // set the refresh progress bar view
@@ -502,14 +555,14 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         }
 
 
-       //executes connection from another thread instead of the ui thread
+        //executes connection from another thread instead of the ui thread
         @Override
         protected List<Event> doInBackground(Double... params) {
             Log.i(TAG, "do in background");
             //url string for node js server,  on localhost for now
             // london ip: 192.168.42.158
             // brighton ip: 192.168.42.69
-            String urlString = ("http://192.168.42.155:3000/events?lat=" + lat + "&lng=" + lon + "&distance=3500&sort=venue&access_token=");
+            String urlString = ("http://192.168.42.155:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=venue&access_token=");
 
             BufferedReader br = null;
             String output = null;
@@ -583,8 +636,15 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 // remove the progress bar view
                 refreshMenuItem.setActionView(null);
             }
+
+
             //display events on map
             MapsActivity.displayEvents(eventList);
+
+            //if there are no events then display toast
+            if (counter == 0) {
+                DisplayToast();
+            }
         }
     }
 }

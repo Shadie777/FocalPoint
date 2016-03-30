@@ -3,6 +3,8 @@ package com.seankeating.focalpointViews;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointPresenter.LoginManager;
 import com.seankeating.focalpointPresenter.MapsActivity;
@@ -31,6 +33,11 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 
+    public void onClickBtn(View v)
+    {
+        Intent intent = new Intent(LoginActivity.this, ScreenSliderActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

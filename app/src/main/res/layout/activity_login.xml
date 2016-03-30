@@ -22,10 +22,23 @@
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="156dp"
+        android:src="@mipmap/focalpoint"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="144dp"
-        android:src="@mipmap/focalpoint" />
+       />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="185dp"
+        android:layout_height="35dp"
+        android:text="Help"
+        android:id="@+id/button"
+        android:clickable="true"
+        android:layout_alignBottom="@+id/fragment"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:onClick="onClickBtn"/>
 
 
 </RelativeLayout>
