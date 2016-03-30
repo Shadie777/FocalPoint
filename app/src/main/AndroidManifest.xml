@@ -39,7 +39,8 @@
         <activity
             android:name="com.seankeating.focalpointPresenter.MapsActivity"
             android:label="@string/title_activity_maps"
-            ></activity>
+            >
+        </activity>
         <activity android:name="com.seankeating.focalpointPresenter.DisplayEventDetails"
             android:screenOrientation="portrait"
             ></activity>
