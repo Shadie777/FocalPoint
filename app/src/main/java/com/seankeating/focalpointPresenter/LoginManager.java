@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -24,7 +23,6 @@ import com.seankeating.focalpoint.R;
 public class LoginManager extends Fragment {
 
     private CallbackManager callBackManager;
-
 
     public LoginManager() {
 

@@ -45,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
 import com.seankeating.focalpoint.R;
 import com.seankeating.focalpointModel.Event;
 import com.seankeating.focalpointModel.MarkerStateManager;
+import com.seankeating.focalpointModel.SessionManager;
 import com.seankeating.focalpointModel.VenueLocation;
 import com.seankeating.focalpointViews.LoginActivity;
 import com.seankeating.focalpointViews.ScreenSliderActivity;
@@ -215,6 +216,10 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     //handles logout of system
     public void logout() {
+
+        SessionManager sm = new SessionManager(this);
+        sm.clearSession();
+
         com.facebook.login.LoginManager.getInstance().logOut();
         Intent i = new Intent(MapsActivity.this, LoginActivity.class);
         startActivity(i);
@@ -249,11 +254,22 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     //updates display of the date in actionbar and gets new events based on that date
     private void updateDisplay() {
+        //format the day variable to show a 0 in front of it  ifits between the 1st and the 10th
+        String formatday;
+
+        if(mDay < 10){
+            formatday = new StringBuilder()
+                    .append("0").append(mDay).toString();
+        }else{
+            formatday = new StringBuilder()
+                    .append(mDay).toString();
+        }
+
         this.datetext.setText(
                 new StringBuilder()
                         // Month is 0 based so add 1
+                        .append(formatday).append("-")
                         .append(mMonth + 1).append("-")
-                        .append(mDay).append("-")
                         .append(mYear).append(" "));
 
         mMap.clear();
@@ -487,13 +503,23 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     //display the events taken from facebook
     public static void displayEvents(List<Event> eventList) {
-
+        String chosendate;
         counter = 0;
+
         //used to filter based on date
-        String actualdate = new StringBuilder()
-                .append(mYear).append("-")
-                .append("0").append(mMonth + 1).append("-")
-                .append(mDay).toString();
+        //if statement formats date in order to filter correctly
+        if(mDay < 10){
+            chosendate = new StringBuilder()
+                    .append(mYear).append("-")
+                    .append("0").append(mMonth + 1).append("-")
+                    .append("0").append(mDay).toString();
+        }else {
+            chosendate = new StringBuilder()
+                    .append(mYear).append("-")
+                    .append("0").append(mMonth + 1).append("-")
+                    .append(mDay).toString();
+
+        }
 
 
         //go through the events in list
@@ -505,6 +531,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             String datetime = event.getEventStarttime();
             String date = datetime.substring(0, 10);
 
+
+
             //get venue name and event name
             VenueLocation vl = event.getVenueLocation();
             String venueTitle = event.getVenueName();
@@ -514,7 +542,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             LatLng pos = new LatLng(vl.getLatitude(), vl.getLongitude());
 
             //if the date of event matches the filtered date
-            if (actualdate.contentEquals(date)) {
+            if (chosendate.contentEquals(date)) {
                 counter++;
                 // add marker to map and put in marker hashmap
                 Marker m = mMap.addMarker(new MarkerOptions()
@@ -562,7 +590,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             //url string for node js server,  on localhost for now
             // london ip: 192.168.42.158
             // brighton ip: 192.168.42.69
-            String urlString = ("http://192.168.42.155:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=venue&access_token=");
+            String urlString = ("http://192.168.0.23:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=venue&access_token=");
 
             BufferedReader br = null;
             String output = null;

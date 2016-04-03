@@ -85,7 +85,8 @@
         android:inputType="none"
         android:layout_toRightOf="@+id/textView2"
         android:layout_toEndOf="@+id/textView2"
-        android:layout_alignTop="@+id/textView3" />
+        android:layout_alignTop="@+id/textView3"
+        android:autoLink="web"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -127,7 +128,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Desc:"
         android:id="@+id/textView3"
-    android:layout_below="@+id/LocationView"
+          android:layout_below="@+id/LocationView"
     android:layout_toLeftOf="@+id/descview"
     android:layout_toStartOf="@+id/descview" />
 
