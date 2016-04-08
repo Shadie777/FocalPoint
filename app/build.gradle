@@ -5,21 +5,28 @@ android {
     compileSdkVersion 23
     buildToolsVersion "21.1.2"
 
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+
 
     sourceSets {
 
         androidTest {
-            java.srcDirs = ['androidTest/java']
+            java.srcDirs = ['src/test/java']
         }
+        main { java.srcDirs = ['src/main/java'] }
     }
 
     defaultConfig {
         applicationId "com.seankeating.focalpoint"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
 
     }
     buildTypes {
@@ -37,17 +44,27 @@ repositories {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    compile 'com.android.support:support-annotations:23.2.0'
+    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile 'com.android.support.test:runner:0.4'
+   compile 'com.android.support.test:rules:0.4'
+   compile 'com.android.support.test.espresso:espresso-contrib:2.1'
 
+   testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
+    androidTestCompile 'com.android.support:support-annotations:23.2.0'
+    androidTestCompile 'com.android.support.test:runner:0.4'
+   androidTestCompile 'com.android.support.test:rules:0.4'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+   androidTestCompile 'com.android.support:support-v4:23.1.1'
 
+    compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.facebook.android:facebook-android-sdk:4.7.0'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.code.gson:gson:2.5'
-    compile 'com.jayway.android.robotium:robotium-solo:5.2.1'
 
 }
 

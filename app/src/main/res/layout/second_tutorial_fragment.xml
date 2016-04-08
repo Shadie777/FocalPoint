@@ -20,7 +20,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="@string/tutorial2"
-        android:id="@+id/textView4"
+        android:id="@+id/tutorialview2"
         android:layout_below="@+id/imageView3"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp" />
