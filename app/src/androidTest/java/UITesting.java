@@ -306,6 +306,17 @@ public class UITesting extends InstrumentationTestCase {
 
             Thread.sleep(3000);
 
+            //click custom marker
+            customlocation.click();
+
+            //click its info window
+            Rect bounds = marker.getBounds();
+            int x = bounds.centerX();
+            int y = bounds.centerY();
+            mDevice.click(x, y + 10);
+            Thread.sleep(3000);
+
+
             //click
             marker.click();
 
@@ -313,9 +324,9 @@ public class UITesting extends InstrumentationTestCase {
 
 
             //get coordinates and click on info window
-            Rect bounds = marker.getBounds();
-            int x = bounds.centerX();
-            int y = bounds.centerY();
+             bounds= marker.getBounds();
+             x = bounds.centerX();
+             y = bounds.centerY();
             mDevice.click(x, y + 10);
             Thread.sleep(3000);
 
