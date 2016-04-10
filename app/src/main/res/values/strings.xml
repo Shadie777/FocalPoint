@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="facebookID">1038263616207618</string>
     <string name="tutorial1">When the app opens, it will automatically search for nearby events.</string>
-    <string name="tutorial2">You can place a marker by tapping on the screen,and the app will then search fro events around
+    <string name="tutorial2">You can place a marker by tapping on the screen,and the app will then search for events around
     that marker.</string>
      <string name="tutorial3">You can filter by date by clicking the top right menu button, then selecting filter</string>
     <string name="tutorial4">Select a marker to view the venue name and the event name. Tapping on the info window will then

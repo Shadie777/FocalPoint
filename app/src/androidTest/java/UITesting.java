@@ -1,10 +1,12 @@
 /**
  * Created by Sean on 08/04/2016.
  */
+
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.support.test.uiautomator.Until;
 import android.test.InstrumentationTestCase;
 import android.widget.Button;
 import android.widget.EditText;
+
 import static org.junit.Assert.assertThat;
 
 
@@ -142,10 +145,8 @@ public class UITesting extends InstrumentationTestCase {
                 .text("Log in with Facebook")
                 .className("android.widget.Button"));
 
-
         //check that new window has loaded
         assertTrue("activity loaded", login.clickAndWaitForNewWindow(30000));
-
 
         //set username
         UiObject user = mDevice.findObject(new UiSelector()
@@ -213,7 +214,7 @@ public class UITesting extends InstrumentationTestCase {
         UiObject marker = map.getChild(new UiSelector().index(0));
 
         if (marker.exists()) {
-          //check marker is on map
+            //check marker is on map
             assertTrue("marker exists", marker.exists());
 
             //get marker description
@@ -242,9 +243,8 @@ public class UITesting extends InstrumentationTestCase {
             //check if marker is still there
             assertThat(marker.getContentDescription(), CoreMatchers.containsString(markerdesc));
 
-
             //click refresh
-            mDevice.click(480,95);
+            mDevice.click(480, 95);
 
             //get marker that has reappeared
             marker = map.getChild(new UiSelector().index(0));
@@ -290,14 +290,13 @@ public class UITesting extends InstrumentationTestCase {
 
         Thread.sleep(5000);
 
-        UiObject customlocation = map.getChild(new UiSelector().descriptionContains("You").index(map.getChildCount()-1));
-        UiObject marker = map.getChild(new UiSelector().index(map.getChildCount()-2));
-
+        UiObject customlocation = map.getChild(new UiSelector().descriptionContains("You").index(map.getChildCount() - 1));
+        UiObject marker = map.getChild(new UiSelector().index(map.getChildCount() - 2));
 
         //check if custom marker is placed
         assertTrue("custom marker exists", customlocation.exists());
 
-        if(marker.exists()){
+        if (marker.exists()) {
             //check that there is an event marker
             assertTrue("marker exists", marker.exists());
 
@@ -316,25 +315,20 @@ public class UITesting extends InstrumentationTestCase {
             mDevice.click(x, y + 10);
             Thread.sleep(3000);
 
-
             //click
             marker.click();
 
             Thread.sleep(1000);
 
-
             //get coordinates and click on info window
-             bounds= marker.getBounds();
-             x = bounds.centerX();
-             y = bounds.centerY();
+            bounds = marker.getBounds();
+            x = bounds.centerX();
+            y = bounds.centerY();
             mDevice.click(x, y + 10);
             Thread.sleep(3000);
 
-
-
             //test event details on new page
             testEventDetailsWindow();
-
 
             //get marker that has reappeared
             marker = map.getChild(new UiSelector().index(1));
@@ -346,15 +340,15 @@ public class UITesting extends InstrumentationTestCase {
             assertThat(marker.getContentDescription(), CoreMatchers.containsString(markerdesc));
 
             //click refresh
-            mDevice.click(480,95);
+            mDevice.click(480, 95);
 
             //get marker that has reappeared
-            marker = map.getChild(new UiSelector().index(map.getChildCount()-2));
+            marker = map.getChild(new UiSelector().index(map.getChildCount() - 2));
 
             //check if marker is the same as the orginal
             assertThat(marker.getContentDescription(), CoreMatchers.containsString(markerdesc));
 
-        }else{
+        } else {
             //check that there is no event marker
             assertFalse("marker doesnt exist", marker.exists());
         }
@@ -370,9 +364,8 @@ public class UITesting extends InstrumentationTestCase {
                 .className("android.widget.TextView"));
         filter.click();
 
-
         //change the day to filter
-       mDevice.click(200,668);
+        mDevice.click(200, 668);
 
         UiObject ok = mDevice.findObject(new UiSelector()
                 .text("OK")
@@ -387,12 +380,10 @@ public class UITesting extends InstrumentationTestCase {
                 .description("Google Map")
                 .className("android.view.View"));
 
-
         //check that map exists
         assertTrue("map exists", map.exists());
 
         UiObject marker = map.getChild(new UiSelector().index(0));
-
 
         if (marker.exists()) {
             //check marker is on map
@@ -426,7 +417,7 @@ public class UITesting extends InstrumentationTestCase {
 
 
             //click refresh
-            mDevice.click(480,95);
+            mDevice.click(480, 95);
 
             //get marker that has reappeared
             marker = map.getChild(new UiSelector().index(0));
