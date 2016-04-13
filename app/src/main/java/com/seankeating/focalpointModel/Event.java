@@ -317,10 +317,6 @@ public class Event implements Parcelable {
         this.eventDistance = in.readString();
         this.eventTimeFromNow = (Integer) in.readSerializable();
         this.eventStats = (EventStats) in.readParcelable(EventStats.class.getClassLoader());
-
-
-
-
     }
 
     public int describeContents(){
@@ -343,6 +339,7 @@ public class Event implements Parcelable {
         dest.writeSerializable(this.eventTimeFromNow);
         dest.writeParcelable(eventStats, flags);
     }
+
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Event createFromParcel(Parcel in) {
             return new Event(in);

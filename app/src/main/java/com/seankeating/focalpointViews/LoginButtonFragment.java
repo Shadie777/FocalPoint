@@ -15,7 +15,6 @@ import com.seankeating.focalpoint.R;
  */
 public class LoginButtonFragment extends Fragment {
 
-
     public LoginButtonFragment() {
         // Required empty public constructor
     }

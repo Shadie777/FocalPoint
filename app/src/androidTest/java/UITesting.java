@@ -153,7 +153,7 @@ public class UITesting extends InstrumentationTestCase {
                 .instance(0)
                 .className(EditText.class));
 
-        user.setText("seanjk@hotmail.co.uk");
+        user.setText("fdhkhbr_moiduescu_1459631980@tfbnw.net");
 
         Thread.sleep(1000);
 
@@ -162,7 +162,7 @@ public class UITesting extends InstrumentationTestCase {
                 .instance(1)
                 .className(EditText.class));
         input.setText("text");
-        input.setText("Coding160695");
+        input.setText("testuser1");
 
         Thread.sleep(1000);
 
@@ -414,7 +414,6 @@ public class UITesting extends InstrumentationTestCase {
 
             //check if marker is still there
             assertThat(marker.getContentDescription(), CoreMatchers.containsString(markerdesc));
-
 
             //click refresh
             mDevice.click(480, 95);

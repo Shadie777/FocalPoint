@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.FacebookSdk;
@@ -50,6 +52,8 @@ import com.seankeating.focalpointModel.VenueLocation;
 import com.seankeating.focalpointViews.LoginActivity;
 import com.seankeating.focalpointViews.ScreenSliderActivity;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -72,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
     //counter for number of events found
     static int counter = 0;
-
+    int error = 0;
     //list of variables storing the date
     private static int mYear;
     private static int mMonth;
@@ -150,11 +154,25 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         //set a text view in action bar for date
         datetext = new TextView(this);
-        datetext.setText(new StringBuilder()
-                // Month is 0 based so add 1
-                .append(mMonth + 1).append("-")
-                .append(mDay).append("-")
-                .append(mYear).append(" "));
+
+        String formatday;
+
+        if(mDay < 10){
+            formatday = new StringBuilder()
+                    .append("0").append(mDay).toString();
+        }else{
+            formatday = new StringBuilder()
+                    .append(mDay).toString();
+        }
+
+        datetext.setText(
+                new StringBuilder()
+                        // Month is 0 based so add 1
+                        .append(formatday).append("-")
+                        .append("0").append(mMonth + 1).append("-")
+                        .append(mYear).append(" "));
+
+
         datetext.setPadding(5, 0, 5, 0);
         datetext.setTypeface(null, Typeface.BOLD);
         datetext.setTextSize(14);
@@ -185,7 +203,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             case R.id.action_refresh:
                 refreshMenuItem = item;
                 mMap.clear();
-
                 //if user placed marker
                 if (customLocation != null) {
                     //save it
@@ -269,7 +286,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 new StringBuilder()
                         // Month is 0 based so add 1
                         .append(formatday).append("-")
-                        .append(mMonth + 1).append("-")
+                        .append("0").append(mMonth + 1).append("-")
                         .append(mYear).append(" "));
 
         mMap.clear();
@@ -433,8 +450,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         customLocation = point;
 
         //take lat and lon of point
-        double lat = point.latitude;
-        double lng = point.longitude;
+        double lat = customLocation.latitude;
+        double lng = customLocation.longitude;
 
         //and get events based on that location
         getEvents mGetEvents = new getEvents(lat, lng);
@@ -476,12 +493,17 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     @Override
     public boolean onMyLocationButtonClick() {
         mMap.clear();
+
+        customLocation = null;
+
         //take lat and lon of point
         double lat = mLocation.getLatitude();
         double lng = mLocation.getLongitude();
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
+        LatLng userlocation = new LatLng(lat, lng);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(userlocation));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userlocation, 14.0f));
 
         //and get events based on that location
         getEvents mGetEvents = new getEvents(lat, lng);
@@ -501,6 +523,10 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         Toast.makeText(activity, "No Events!", Toast.LENGTH_LONG).show();
     }
 
+    public void DisplayError() {
+        Activity activity = (Activity) this;
+        Toast.makeText(activity, "Error, Refresh", Toast.LENGTH_LONG).show();
+    }
     //display the events taken from facebook
     public static void displayEvents(List<Event> eventList) {
         String chosendate;
@@ -521,6 +547,8 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
         }
 
+        System.out.println("chosendate: " + chosendate);
+        System.out.println();
 
         //go through the events in list
         for (int i = 0; i < eventList.size(); i++) {
@@ -532,6 +560,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             String date = datetime.substring(0, 10);
 
 
+            System.out.println(date);
 
             //get venue name and event name
             VenueLocation vl = event.getVenueLocation();
@@ -563,18 +592,20 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         double lon;
         public final String TAG = getEvents.class.getSimpleName();
         public List<Event> eventList = new ArrayList<Event>();
-
+        private ProgressBar bar;
 
         public getEvents(double lat, double lon) {
             //set variables of lat and lon of user
             this.lat = lat;
             this.lon = lon;
+            error = 0;
         }
 
 
         //what happens before execution of connection
         @Override
         protected void onPreExecute() {
+
             // set the refresh progress bar view
             if (refreshMenuItem != null) {
                 refreshMenuItem.setActionView(R.layout.action_progressbar);
@@ -590,13 +621,12 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
             //url string for node js server,  on localhost for now
             // london ip: 192.168.42.158
             // brighton ip: 192.168.42.69
-            String urlString = ("http://192.168.0.23:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=venue&access_token=");
+            String urlString = ("http://10.1.52.125:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=time&access_token=");
 
             BufferedReader br = null;
             String output = null;
 
             Gson gson = new Gson();
-
 
             try {
                 //connect to URL
@@ -609,6 +639,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 //get json from url
                 httpConn.setRequestMethod("GET");
                 httpConn.setRequestProperty("Accept", "application/json");
+
 
                 br = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
 
@@ -638,17 +669,21 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
 
                 httpConn.disconnect();
             } catch (MalformedURLException e) {
-
+                error++;
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                error++;
                 e.printStackTrace();
             } catch (IOException e) {
+                error++;
                 e.printStackTrace();
             } catch (URISyntaxException e) {
+                error++;
                 e.printStackTrace();
-
             } catch (JsonSyntaxException e) {
+                error++;
                 e.printStackTrace();
             }
-
             return eventList;
         }
 
@@ -665,6 +700,9 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
                 refreshMenuItem.setActionView(null);
             }
 
+            if (error > 0){
+                DisplayError();
+            }
 
             //display events on map
             MapsActivity.displayEvents(eventList);
