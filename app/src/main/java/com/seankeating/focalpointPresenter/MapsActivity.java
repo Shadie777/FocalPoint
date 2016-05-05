@@ -101,7 +101,6 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
     LatLng customLocation;
     MarkerOptions customMarker;
 
-
     //public variable of user/marker location to use anywhere
     LatLng latLng;
 
@@ -619,8 +618,7 @@ public class MapsActivity extends FragmentActivity implements GoogleApiClient.Co
         protected List<Event> doInBackground(Double... params) {
             Log.i(TAG, "do in background");
             //url string for node js server,  on localhost for now
-            // london ip: 192.168.42.158
-            // brighton ip: 192.168.42.69
+            // change to local ip address
             String urlString = ("http://10.1.52.125:3000/events?lat=" + lat + "&lng=" + lon + "&distance=8000&sort=time&access_token=");
 
             BufferedReader br = null;
